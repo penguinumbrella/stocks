@@ -39,7 +39,7 @@ public class StockEntityService {
     // update one
     public ResponseEntity<StockEntity> updateOne(int id, StockEntityDto dto) {
         if (this.repo.existsById(id)) {
-            StockEntity updated = this.repo.save(new StockEntity(  0, 
+            StockEntity updated = this.repo.save(new StockEntity(  id, 
                                                                     dto.tickerSymbol(), 
                                                                     dto.companyName(), 
                                                                     dto.sector(), 

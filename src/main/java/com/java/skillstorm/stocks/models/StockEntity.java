@@ -11,7 +11,7 @@ import jakarta.persistence.Table;
 
 
 @Entity
-@Table(name = "Entity")
+@Table(name = "entry")
 public class StockEntity {
 
     @Id
