@@ -40,7 +40,7 @@ public class StockEntityController {
         return service.updateOne(id, dto);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOne(@PathVariable int id) {
         return service.deleteOne(id);
     }
