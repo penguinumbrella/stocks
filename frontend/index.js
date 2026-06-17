@@ -1,7 +1,7 @@
 import {API} from "./api.js";
 import {UI} from "./ui.js";
 
-//const allStocks = [];
+let stocks = [];
 
 const tableBody = document.getElementById("stock-table-body");
 const form = document.getElementById("new-stock-form");
@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Initial fetch of data
     try {
-        const stocks = await API.findAll();
+        stocks = await API.findAll();
         console.log("Loading all stocks: ", stocks);
         stocks.forEach(stock => UI.renderRow(tableBody, stock));
     } catch(err) {
@@ -25,21 +25,35 @@ document.addEventListener("DOMContentLoaded", async () => {
         eventInfo.preventDefault();
 
         const newStock = UI.getFormData(form);
+        const id = newStock.id;
+        //const stockData = UI.getFormData(eventInfo.target);
 
         try {
-            const stock = await API.createOne(newStock);
-            console.log("Adding stock: ", stock);
-            UI.renderRow(tableBody, stock);
-            form.reset(); // Clear form on success
+            if (id) {
+                //console.log("we're in edit mode");
+                await API.updateOne(id, newStock);
+                UI.updateRow(id, newStock);
+                
+                form.querySelector('input[name="id"]')?.remove();
+            } else {
+                const stock = await API.createOne(newStock);
+                console.log("Adding stock: ", stock);
+                stocks.push(stock);
+                console.log(stocks);
+                UI.renderRow(tableBody, stock);
+            }
+            form.reset();
+            
         } catch(err) {
             console.error(err);
             alert("Error: That Ticker Symbol already exists or the data is invalid.");
         }
     })
 
-    // Remove a stock
+    // Remove/Edit a stock
     tableBody.addEventListener("click", async (eventInfo) => {
 
+        // Handle Delete
         if (event.target.classList.contains("delete-btn")) {
             const idString = eventInfo.target.id;
             const id = idString.split("-")[1];
@@ -51,7 +65,22 @@ document.addEventListener("DOMContentLoaded", async () => {
                 console.error(err);
             }
         }
-        
+
+        // Handle Edit
+
+        if (event.target.classList.contains("edit-btn")) {
+            const idString = eventInfo.target.id;
+            const id = idString.split("-")[1];
+
+            const stockToEdit = stocks.find(s => s.id == id);
+
+            console.log("id", id);
+            console.log(stocks)
+
+            
+            console.log(stockToEdit);
+            UI.populateForm(form, stockToEdit);
+        }
         
     })
 

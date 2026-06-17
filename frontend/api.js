@@ -22,6 +22,7 @@ export const API = {
         )
 
         if (response.ok) {
+            
             return await response.json();
         } else {
             throw new Error(`Failed to create stock: ${response.status}`);
@@ -30,7 +31,8 @@ export const API = {
     },
 
     async updateOne(id, updatedStock) {
-        const response = await(fetch `${BACKEND_URL}/${id}`, {
+
+        const response = await fetch(`${BACKEND_URL}/${id}`, {
             method: "PUT",
             headers: {
                 "Content-Type" : "application/json"
