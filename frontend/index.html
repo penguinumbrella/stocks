@@ -2,15 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Movie List</title>
+    <title>Stock Tracker</title>
 </head>
 <body>
 
+    <form id="new-stock-form" action = "#">
+        <input name="ticker-symbol" placeholder="Ticker (e.g. AAPL)">
+        <input name="company-name" placeholder="Company Name">
+        <input name="sector" placeholder="Sector">
+        <input name="current-market-price" type="number" step="0.01" placeholder="Price">
+        <input name="target-price" type="number" step="0.01" placeholder="Target">
+        <input name="analyst-notes" placeholder="Notes">
+        <button type="submit">Add Stock</button>
+    </form>
+
+    <hr>
+
     <table>
-        <tbody id="movie-table-body">
+        <thead>
+            <tr>
+                <th>Ticker</th>
+                <th>Company</th>
+                <th>Sector</th>
+                <th>Price</th>
+                <th>Target</th>
+                <th>Date Added</th>
+                <th>Notes</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="stock-table-body">
             </tbody>
     </table>
 
-    <script src="index.js" defer></script>
+    <script type="module" src="index.js"></script>
 </body>
 </html>
