@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         // Handle Edit
 
-        if (event.target.classList.contains("edit-btn")) {
+        else if (event.target.classList.contains("edit-btn")) {
             const idString = eventInfo.target.id;
             const id = idString.split("-")[1];
 
