@@ -5,16 +5,18 @@ export const UI = {
         tr.id = `TR-${stock.id}`;
 
         tr.innerHTML = `
-            <td>${stock.tickerSymbol}</td>
-            <td>${stock.companyName}</td>
-            <td>${stock.sector}</td>
-            <td>${stock.currentMarketPrice}</td>
-            <td>${stock.targetPrice}</td>
-            <td>${stock.dateAdded}</td>
-            <td>${stock.analystNotes}</td>
+            <td class="table-cell">${stock.tickerSymbol}</td>
+            <td class="table-cell">${stock.companyName}</td>
+            <td class="table-cell">${stock.sector}</td>
+            <td class="table-cell">${stock.currentMarketPrice}</td>
+            <td class="table-cell">${stock.targetPrice}</td>
+            <td class="table-cell">${stock.dateAdded}</td>
+            <td class="table-cell">${stock.analystNotes}</td>
 
-            <button class = "edit-btn"     id="EDIT-${stock.id}"    >   Edit    </button>
-            <button class = "delete-btn"   id="DEL-${stock.id}"     >   Delete  </button>
+            <td class="table-cell text-center">
+                <button class = "edit-btn"     id="EDIT-${stock.id}"    >   Edit    </button>
+                <button class = "delete-btn"   id="DEL-${stock.id}"     >   Delete  </button>
+            </td>
             `
         
             tableBody.appendChild(tr);

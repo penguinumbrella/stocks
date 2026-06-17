@@ -62,6 +62,13 @@ document.addEventListener("DOMContentLoaded", async () => {
             const idString = eventInfo.target.id;
             const id = idString.split("-")[1];
             // console.log("Deleting ID:", id);
+
+            const confirmed = confirm("Are you sure you want to delete this stock? This action cannot be undone.");
+        
+            if (!confirmed) {
+                return;
+            }
+
             try {
                 await API.deleteOne(id);
                 UI.removeRow(id);
