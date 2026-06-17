@@ -17,6 +17,8 @@ import com.java.skillstorm.stocks.dtos.StockEntityDto;
 import com.java.skillstorm.stocks.models.StockEntity;
 import com.java.skillstorm.stocks.services.StockEntityService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/entities")
 @CrossOrigin(origins = "http://127.0.0.1:5500")
@@ -33,12 +35,12 @@ public class StockEntityController {
     }
 
     @PostMapping
-    public ResponseEntity<StockEntity> createOne(@RequestBody StockEntityDto dto) {
+    public ResponseEntity<StockEntity> createOne(@Valid @RequestBody StockEntityDto dto) {
         return service.createOne(dto);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<StockEntity> updateOne(@PathVariable int id, @RequestBody StockEntityDto dto) {
+    public ResponseEntity<StockEntity> updateOne(@PathVariable int id, @Valid @RequestBody StockEntityDto dto) {
         return service.updateOne(id, dto);
     }
 

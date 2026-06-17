@@ -26,7 +26,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const newStock = UI.getFormData(form);
         const id = newStock.id;
-        //const stockData = UI.getFormData(eventInfo.target);
+
+        if (!UI.validateStockData(newStock)) {
+            return;
+        }
 
         try {
             if (id) {
@@ -43,10 +46,11 @@ document.addEventListener("DOMContentLoaded", async () => {
                 UI.renderRow(tableBody, stock);
             }
             form.reset();
+            UI.updateButtonState(form, false);
             
         } catch(err) {
             console.error(err);
-            alert("Error: That Ticker Symbol already exists or the data is invalid.");
+            alert(err.message);
         }
     })
 
@@ -80,6 +84,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             
             console.log(stockToEdit);
             UI.populateForm(form, stockToEdit);
+            UI.updateButtonState(form, true);
         }
         
     })

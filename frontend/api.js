@@ -7,7 +7,8 @@ export const API = {
         if (response.ok) {
             return await response.json();
         } else {
-            throw new Error(`Failed to retrieve all stocks: ${response.status}`);
+            const errorBody = await response.json();
+            throw new Error(`${errorBody.message}`);
         }
     },
 
@@ -25,7 +26,8 @@ export const API = {
             
             return await response.json();
         } else {
-            throw new Error(`Failed to create stock: ${response.status}`);
+            const errorBody = await response.json();
+            throw new Error(`${errorBody.message}`);
         }
         
     },
@@ -42,7 +44,8 @@ export const API = {
         if (response.ok) {
             return await response.json();
         } else {
-            throw new Error(`Failed to update stock: ${response.status}`);
+            const errorBody = await response.json();
+            throw new Error(`${errorBody.message}`);
         }
     },
 
@@ -54,7 +57,8 @@ export const API = {
         if (response.ok) {
             return true;
         } else {
-            throw new Error(`Delete failed with status: ${response.status}`);
+            const errorBody = await response.json();
+            throw new Error(`${errorBody.message}`);
         }
     }
 }

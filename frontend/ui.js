@@ -39,8 +39,8 @@ export const UI = {
                 <td>${stock.dateAdded}</td>
                 <td>${stock.analystNotes}</td>
                 
-                <button class="edit-btn" id="EDIT-${stock.id}">Edit</button>
-                <button class="delete-btn" id="DEL-${stock.id}">Delete</button>
+                <button class = "edit-btn"     id="EDIT-${stock.id}"    >   Edit    </button>
+                <button class = "delete-btn"   id="DEL-${stock.id}"     >   Delete  </button>
             `;
         }
     },
@@ -80,6 +80,23 @@ export const UI = {
         }
         hiddenId.value = stock.id;
 
+    },
+
+    updateButtonState (form, isEditMode) {
+        const btn = form.querySelector('button[type="submit"]');
+        btn.textContent = isEditMode ? "Update Stock" : "Add Stock";
+    },
+
+    validateStockData(stock) {
+        if (!stock.tickerSymbol || !stock.companyName || !stock.sector) {
+            alert("Please fill in all required fields.");
+            return false;
+        }
+        if (stock.currentMarketPrice <= 0 || stock.targetPrice <= 0) {
+            alert("Prices must be postiive values greater than zero.");
+            return false;
+        }
+        return true;
     }
         
 }

@@ -20,7 +20,10 @@ spring:
         import: optional:file:../.env[.properties]
 
     server:
-        post: 8080
+        port: 8080
+        error:
+            include-stacktrace: never
+            include-message: never
     
     logging:
         level:
