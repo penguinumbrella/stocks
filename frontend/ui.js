@@ -1,6 +1,5 @@
 export const UI = {
-    renderRow (stock) {
-        const tableBody = document.getElementById("stock-table-body");
+    renderRow (tableBody, stock) {
         let tr = document.createElement("tr"); // one single stock row
 
         tr.id = `TR-${stock.id}`;
@@ -13,14 +12,20 @@ export const UI = {
             <td>${stock.targetPrice}</td>
             <td>${stock.dateAdded}</td>
             <td>${stock.analystNotes}</td>
+
+            <button class = "edit-btn"     id="EDIT-${stock.id}"    >   Edit    </button>
+            <button class = "delete-btn"   id="DEL-${stock.id}"     >   Delete  </button>
             `
         
             tableBody.appendChild(tr);
     },
 
-    
-    getFormData() {
-        let inputData = new FormData(document.getElementById("new-stock-form"));
+    removeRow(id) {
+        document.getElementById(`TR-${id}`)?.remove();
+    },
+
+    getFormData(form) {
+        let inputData = new FormData(form);
 
         const newStock = {
             tickerSymbol: inputData.get("ticker-symbol"),

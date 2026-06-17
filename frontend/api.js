@@ -4,7 +4,11 @@ export const API = {
 
     async findAll() {
         const response = await fetch(BACKEND_URL);
-        return await response.json();
+        if (response.ok) {
+            return await response.json();
+        } else {
+            throw new Error(`Failed to retrieve all stocks: ${response.status}`);
+        }
     },
 
     async createOne(newStock) {
@@ -14,9 +18,41 @@ export const API = {
                 "Content-Type" : "application/json"
             },
             body: JSON.stringify(newStock)
-        }
+            }
         )
-        return await response.json();
+
+        if (response.ok) {
+            return await response.json();
+        } else {
+            throw new Error(`Failed to create stock: ${response.status}`);
+        }
+        
+    },
+
+    async updateOne(id, updatedStock) {
+        const response = await(fetch `${BACKEND_URL}/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type" : "application/json"
+            },
+            body: JSON.stringify(updatedStock)
+        })
+        if (response.ok) {
+            return await response.json();
+        } else {
+            throw new Error(`Failed to update stock: ${response.status}`);
+        }
+    },
+
+    async deleteOne(id) {
+        const response = await fetch(`${BACKEND_URL}/${id}`, {
+            method: "DELETE"
+            }
+        )
+        if (response.ok) {
+            return true;
+        } else {
+            throw new Error(`Delete failed with status: ${response.status}`);
+        }
     }
-    // update and delete fns
 }
