@@ -35,6 +35,7 @@
     <div class="max-w-5xl mx-auto">
         <h1 class="text-3xl font-bold mb-8 text-slate-800">Portfolio Tracker</h1>
 
+        <!-- STOCK CREATION/EDIT FORM -->
         <form id="new-stock-form" action="#" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
             <input name="ticker-symbol"             class="input-field" placeholder="Ticker (e.g. AAPL)">
             <input name="company-name"              class="input-field" placeholder="Company Name">
@@ -46,16 +47,24 @@
             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold p-3 rounded-lg transition-colors col-span-1 md:col-span-2 lg:col-span-3">Add Stock</button>
         </form>
 
+        <!-- SEARCH INPUT -->
+        <div class = "mb-6">
+            <input id="search-input" type="text" placeholder="Search by Ticker or Company Name">
+        </div>
+
+
+        <!-- TABLE -->
         <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
             <table class="w-full text-left text-sm">
             <thead class="bg-slate-100">
                     <tr>
-                        <th class="table-header">Ticker</th>
-                        <th class="table-header">Company</th>
-                        <th class="table-header">Sector</th>
-                        <th class="table-header">Price</th>
-                        <th class="table-header">Target</th>
-                        <th class="table-header">Date Added</th>
+                        <th class="table-header cursor-pointer" data-sort="tickerSymbol">Ticker</th>
+                        <th class="table-header cursor-pointer" data-sort="companyName">Company</th>
+                        <th class="table-header cursor-pointer" data-sort="sector">Sector</th>
+                        <th class="table-header cursor-pointer" data-sort="currentMarketPrice">Price</th>
+                        <th class="table-header cursor-pointer" data-sort="targetPrice">Target</th>
+                        <th class="table-header">Gap</td>
+                        <th class="table-header cursor-pointer" data-sort="dateAdded">Date Added</th>
                         <th class="table-header">Notes</th>
                         <th class="table-header text-center">Actions</th>
                     </tr>
@@ -63,6 +72,13 @@
                 <tbody id="stock-table-body" class="divide-y divide-slate-100">
                     </tbody>
             </table>
+        </div>
+        
+        <!-- PAGINATION CONTROLS -->
+        <div id = "pagination-controls">
+            <button id = "prev-btn" disabled>Previous</button>
+            <span id = "page-info">Page1</span>
+            <button id="next-btn">Next</button>
         </div>
     </div>
 

@@ -3,6 +3,8 @@ package com.java.skillstorm.stocks.services;
 import java.util.Optional;
 
 import org.apache.catalina.startup.ClassLoaderFactory.Repository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +27,16 @@ public class StockEntityService {
     // findAll
     public ResponseEntity<Iterable<StockEntity>> getAll() {
         return ResponseEntity.ok(this.repo.findAll());
+    }
+
+    // findAll (pagination)
+    public ResponseEntity<Page<StockEntity>> getAll(Pageable pageable) {
+        return ResponseEntity.ok(this.repo.findAll(pageable));
+    }
+
+    // search (pagination)
+    public ResponseEntity<Page<StockEntity>> search(String query, Pageable pageable) {
+        return ResponseEntity.ok(this.repo.findByTickerSymbolContainingIgnoreCaseOrCompanyNameContainingIgnoreCaseOrSectorContainingIgnoreCase(query, query, query, pageable));
     }
 
     // create one

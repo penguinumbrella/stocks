@@ -4,12 +4,21 @@ export const UI = {
 
         tr.id = `TR-${stock.id}`;
 
+        // calculate gap between values
+        const current = parseFloat(stock.currentMarketPrice);
+        const target = parseFloat(stock.targetPrice);
+        const gap = (target - current).toFixed(2);
+
+        const targetMet = gap >= 0;
+        
+
         tr.innerHTML = `
             <td class="table-cell">${stock.tickerSymbol}</td>
             <td class="table-cell">${stock.companyName}</td>
             <td class="table-cell">${stock.sector}</td>
-            <td class="table-cell">${stock.currentMarketPrice}</td>
-            <td class="table-cell">${stock.targetPrice}</td>
+            <td class="table-cell">$${current.toFixed(2)}</td>
+            <td class="table-cell">$${target.toFixed(2)}</td>
+            <td class="table-cell">$${gap}</td>
             <td class="table-cell">${stock.dateAdded}</td>
             <td class="table-cell">${stock.analystNotes}</td>
 
@@ -22,6 +31,9 @@ export const UI = {
             tableBody.appendChild(tr);
     },
 
+    // no longer necessary functions
+
+    /*
     removeRow(id) {
         document.getElementById(`TR-${id}`)?.remove();
     },
@@ -30,22 +42,30 @@ export const UI = {
         const tr = document.getElementById(`TR-${id}`);
 
         console.log(`TR-${stock.id}`);
+
+        const current = parseFloat(stock.currentMarketPrice);
+        const target = parseFloat(stock.targetPrice);
+        const gap = (target - current).toFixed(2);
         
         if (tr) {
             tr.innerHTML = `
-                <td>${stock.tickerSymbol}</td>
-                <td>${stock.companyName}</td>
-                <td>${stock.sector}</td>
-                <td>${stock.currentMarketPrice}</td>
-                <td>${stock.targetPrice}</td>
-                <td>${stock.dateAdded}</td>
-                <td>${stock.analystNotes}</td>
+                <td class="table-cell">${stock.tickerSymbol}</td>
+                <td class="table-cell">${stock.companyName}</td>
+                <td class="table-cell">${stock.sector}</td>
+                <td class="table-cell">$${current.toFixed(2)}</td>
+                <td class="table-cell">$${target.toFixed(2)}</td>
+                <td class="table-cell">$${gap}</td>
+                <td class="table-cell">${stock.dateAdded}</td>
+                <td class="table-cell">${stock.analystNotes}</td>
                 
-                <button class = "edit-btn"     id="EDIT-${stock.id}"    >   Edit    </button>
-                <button class = "delete-btn"   id="DEL-${stock.id}"     >   Delete  </button>
+                <td class="table-cell text-center">
+                    <button class = "edit-btn"     id="EDIT-${stock.id}"    >   Edit    </button>
+                    <button class = "delete-btn"   id="DEL-${stock.id}"     >   Delete  </button>
+                </td>
             `;
         }
     },
+    */
 
     getFormData(form) {
         let inputData = new FormData(form);

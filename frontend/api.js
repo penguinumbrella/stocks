@@ -2,13 +2,24 @@ const BACKEND_URL = "http://localhost:8080/entities";
 
 export const API = {
 
-    async findAll() {
-        const response = await fetch(BACKEND_URL);
+    async findAll(page = 0, sort = "tickerSymbol") {
+        const response = await fetch(`${BACKEND_URL}?page=${page}&size=10&sort=${sort}`);
         if (response.ok) {
             return await response.json();
         } else {
             const errorBody = await response.json();
             throw new Error(`${errorBody.message}`);
+        }
+    },
+
+    async search(query, page = 0, sort = "tickerSymbol") {
+        const response = await fetch(`${BACKEND_URL}/search?query=${query}&page=${page}&size=10&sort=${sort}`);
+        if (response.ok) {
+            return await response.json();
+        } else {
+            const errorBody = await response.json();
+            throw new Error(`${errorBody.message}`);
+            
         }
     },
 

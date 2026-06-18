@@ -1,6 +1,10 @@
 package com.java.skillstorm.stocks.controllers;
 
 import org.apache.catalina.connector.Response;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,9 +34,28 @@ public class StockEntityController {
     }
 
     @GetMapping
-    public ResponseEntity<Iterable<StockEntity>> getAll() {
-        return service.getAll();
+    public ResponseEntity<Page<StockEntity>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "tickerSymbol") String sort) { // sorts our paginated pages by given parameter
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sort).ascending());
+        return service.getAll(pageable);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<Page<StockEntity>> search(
+            @RequestParam String query,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "tickerSymbol") String sort) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sort).ascending());
+        return service.search(query, pageable);
+
+    }
+    
+    
 
     @PostMapping
     public ResponseEntity<StockEntity> createOne(@Valid @RequestBody StockEntityDto dto) {
