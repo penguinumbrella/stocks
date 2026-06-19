@@ -312,7 +312,10 @@ const loadStocks = async (page = 0) => {
 
 // Helper functions
 
-// open modal functionality
+/**
+ * Opens the add/edit modal
+ * @param {Object} stock - represents the stock we wish to fill data with (assuming we're in edit mode)
+ */
 const openModal = (stock = null) => {
 
     // reset the form before opening it
@@ -332,8 +335,10 @@ const openModal = (stock = null) => {
     } // add mode otherwise
 }
 
-// render the chart
-const renderChart = async (stocks) => {
+/**
+ * Renders the pie chart on our program.
+ */
+const renderChart = async () => {
     
     try {
         // retrieve sector stats from backend

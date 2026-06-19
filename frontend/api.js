@@ -10,6 +10,12 @@ import {CONFIG} from "./config.js";
 export const API = {
 
     // retrieve all paginated stocks, sorted by header
+    /**
+     * Retrieves a paginated list of stocks
+     * @param {number} page - Page number to retrieve
+     * @param {*} sort - header to sort by
+     * @returns {Promise<Object>} promise to be resolved
+     */
     async findAll(page = 0, sort = "tickerSymbol") {
         // fetch request
         const response = await fetch(`${CONFIG.BACKEND_URL}?page=${page}&size=10&sort=${sort}`);
@@ -22,7 +28,13 @@ export const API = {
         }
     },
 
-    // retrieve paginated stocks according to search input, filtering by ticker, company, and sector
+     /**
+     * Retrieves a paginated list of stocks based on the query string
+     * @param {string} query - search term
+     * @param {number} page - Page number to retrieve
+     * @param {*} sort - header to sort by
+     * @returns {Promise<Object>} promise to be resolved
+     */
     async search(query, page = 0, sort = "tickerSymbol") {
         const response = await fetch(`${CONFIG.BACKEND_URL}/search?query=${query}&page=${page}&size=10&sort=${sort}`);
         if (response.ok) {
@@ -34,7 +46,10 @@ export const API = {
         }
     },
 
-    // retrieve sectors stats from backend for pie chart
+    /**
+     * Retrieves stocks aggregated by sector.
+     * @returns {Promise<Object>} promise to be resolved
+     */
     async getSectorStats() {
         const response = await fetch(`${CONFIG.BACKEND_URL}/sectorStats`);
         if (response.ok) {
@@ -45,7 +60,11 @@ export const API = {
         }
     },
 
-    // create a stock in DB and get it back
+    /**
+     * Creates a new stock
+     * @param {Object} newStock - stock object to create
+     * @returns {Promise<Object>} created stock object in promise
+     */
     async createOne(newStock) {
         const response = await fetch(CONFIG.BACKEND_URL, {
             // adjust headers to post JSON
@@ -67,7 +86,12 @@ export const API = {
         
     },
 
-    // update a stock in DB and get it back
+    /**
+     * Update a stock by ID
+     * @param {number} id - id of the stock
+     * @param updatedStock - stock to update to
+     * @returns {Promise<Object>} updatedStock - created stock
+     */
     async updateOne(id, updatedStock) {
 
         const response = await fetch(`${CONFIG.BACKEND_URL}/${id}`, {
@@ -86,7 +110,11 @@ export const API = {
         }
     },
 
-    // delete a stock in DB
+    /**
+     * Deletes stock by ID
+     * @param {number} id - id of stock to delete
+     * @returns {Promise<boolean>} - returns true if deletion succeeded
+     */
     async deleteOne(id) {
         const response = await fetch(`${CONFIG.BACKEND_URL}/${id}`, {
             // adjust headers to delete

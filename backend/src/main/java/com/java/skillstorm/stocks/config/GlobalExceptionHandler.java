@@ -7,7 +7,6 @@
  *          - duplicate tickers
  *          - prices <= 0
  *          - null fields
- *      - Conflict errors (409s)
  *      - Custom Delete error (404) if id doesn't exist in DB
  * 
  * It only returns information that is necessary to the user/frontend to protect our backend logic's internal workings.
@@ -27,7 +26,11 @@ import org.springframework.web.server.ResponseStatusException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Single exception handler to handle custom exceptions thrown from Service class
+    /**
+     * Returns a custom error message if the service class throws a ResponseStatusException
+     * @param e The {@link ResponseStatusException} thrown by service class
+     * @return a {@link ResponseEntity} containing a {@link Map} of the status and message
+     */
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<Map<String, Object>> handleErrorResponse(ResponseStatusException e) {
 

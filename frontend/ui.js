@@ -4,7 +4,11 @@
 
 
 export const UI = {
-    // render a single row in the table
+    /**
+     * Add a new row to the table
+     * @param {Object} tableBody - the HTML element representing the table body
+     * @param {Object} stock - the stock we want to update
+     */
     renderRow (tableBody, stock) {
 
          // one single stock row
@@ -70,7 +74,11 @@ export const UI = {
             tableBody.appendChild(tr);
     },
 
-    // create a stock object from the modal form
+    /**
+     * Retrieves the stock created upon submitting a form.
+     * @param {Object} form - the HTML object representing the form
+     * @returns an {@link Object} representing the stock from the table
+     */
     getFormData(form) {
         // wrap in FormData for easier access
         let inputData = new FormData(form);
@@ -89,7 +97,11 @@ export const UI = {
         return newStock;
     },
 
-    // populate form with values assuming edit mode
+    /**
+     * Populates the table fields (assuming we're in edit mode) using the stock's data
+     * @param {Object} form - the HTML element representing the form
+     * @param {Object} stock - the stock whose data we wish to use to populate the table
+     */
     populateForm (form, stock) {
         // each field gets assigned from the stock values
         form.querySelector('input[name="ticker-symbol"]').value = stock.tickerSymbol;
@@ -104,7 +116,12 @@ export const UI = {
 
     },
 
-    // Frontend validation if form entries are valid
+    /**
+     * Verifies if the submitted form data is valid on the front-end side.
+     * @param {*} stock - represents the stock data submitted by the form
+     * @returns true if all data is valid. false otherwise
+     * 
+     */
     validateStockData(stock) {
         
         // check if required fields were all filled in
@@ -149,7 +166,10 @@ export const UI = {
 
 // Helper functions
 
-
+/**
+ * Converts the current date into a string
+ * @returns The date as a string
+ */
 const getCurrentDateString = () => {
     return new Date().toISOString().split('T')[0];
 };

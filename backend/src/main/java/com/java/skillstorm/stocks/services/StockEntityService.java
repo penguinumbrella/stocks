@@ -37,17 +37,36 @@ public class StockEntityService {
         this.repo = repo;
     }
 
-    // findAll (pagination)
+    /**
+     * Returns a paginated list of all stocks.
+     * @param page the requested page
+     * @param size the number of items per page
+     * @param sort the header to sort the items by
+     * @return a {@link ResponseEntity} containing the paginated list of all stocks
+     * 
+     * */
     public ResponseEntity<Page<StockEntity>> getAll(Pageable pageable) {
         return ResponseEntity.ok(this.repo.findAll(pageable));
     }
 
-    // search (pagination)
+    /**
+     * Returns a paginated list of all stocks, filtered by query.
+     * @param query the typed query from our search input
+     * @param page the requested page
+     * @param size the number of items per page
+     * @param sort the header to sort the items by
+     * @return a {@link ResponseEntity} containing the paginated list of all stocks, filtered by query
+     * 
+     * */
     public ResponseEntity<Page<StockEntity>> search(String query, Pageable pageable) {
         return ResponseEntity.ok(this.repo.findByTickerSymbolContainingIgnoreCaseOrCompanyNameContainingIgnoreCaseOrSectorContainingIgnoreCase(query, query, query, pageable));
     }
 
-    // sector stats for piechart
+     /**
+     * Returns an aggregated list stocks grouped by sector
+     * @return an {@link ResponseEntity} aggregated {@link List} of {@link StockEntity} grouped by sector
+     * 
+     * */
     public ResponseEntity<List<Map<String,Object>>> getSectorStats() {
         List<Object[]> results = this.repo.countStocksBySector();
         List<Map<String, Object>> stats = new ArrayList<>();
@@ -62,7 +81,13 @@ public class StockEntityService {
         return ResponseEntity.status(200).body(stats);
     }
 
-    // create one
+    /**
+     * Creates a stock in the database and returns it
+     * @param dto a data transfer object representing the stock we wish to add
+     * @return a {@link ResponseEntity} with 201 status if successful with the {@link StockEntity} inside
+     * @throws ResponseStatusException 404 if the stock id cannot be found, 409 if its updated ticker is already in use by another ticker.
+     * 
+     * */
     public ResponseEntity<StockEntity> createOne(StockEntityDto dto) {
 
         // throw 409 if ticker already exists in repo
@@ -91,7 +116,14 @@ public class StockEntityService {
                                                                                 )));
     }
 
-    // update one
+    /**
+     * Updates an existing stock in the database and returns it.
+     * @param id the id of the stock
+     * @param dto a data transfer object representing the stock we wish to update
+     * @return a {@link ResponseEntity} with 200 status if successful with the {@link StockEntity} inside
+     * @throws ResponseStatusException 404 if the stock id cannot be found, 409 if its updated ticker is already in use by another ticker.
+     * 
+     * */
     public ResponseEntity<StockEntity> updateOne(int id, StockEntityDto dto) {
 
         // find the original stock in the database we are updating
@@ -136,7 +168,13 @@ public class StockEntityService {
         return ResponseEntity.notFound().build();
     }
 
-    // delete one
+    /**
+     * Deletes a stock according to the id.
+     * @param id the id of the stock
+     * @return a {@link ResponseEntity} with 204 status if successful
+     * @throws ResponseStatusException if no stock with such id exists
+     * 
+     * */
     public ResponseEntity<Void> deleteOne(int id) {
 
         // if we can't find the id to the stock, throw a 404

@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.java.skillstorm.stocks.dtos.StockEntityDto;
 import com.java.skillstorm.stocks.models.StockEntity;
@@ -45,7 +46,14 @@ public class StockEntityController {
         this.service = service;
     }
 
-    // Retrieve a paginated list of stocks
+    /**
+     * Returns a paginated list of all stocks.
+     * @param page the requested page
+     * @param size the number of items per page
+     * @param sort the header to sort the items by
+     * @return a {@link ResponseEntity} containing the paginated list of all stocks
+     * 
+     * */
     @GetMapping
     public ResponseEntity<Page<StockEntity>> getAll(
             @RequestParam(defaultValue = "0") int page, // requested page
@@ -56,7 +64,15 @@ public class StockEntityController {
         return service.getAll(pageable);
     }
 
-    // Similar to getAll(), but includes the query from the search input
+    /**
+     * Returns a paginated list of all stocks, filtered by query.
+     * @param query the typed query from our search input
+     * @param page the requested page
+     * @param size the number of items per page
+     * @param sort the header to sort the items by
+     * @return a {@link ResponseEntity} containing the paginated list of all stocks, filtered by query
+     * 
+     * */
     @GetMapping("/search")
     public ResponseEntity<Page<StockEntity>> search(
             @RequestParam String query, // search query
@@ -69,25 +85,44 @@ public class StockEntityController {
 
     }
 
-    // retrieves the sector stats for the piechart
+    /**
+     * Returns an aggregated list stocks grouped by sector
+     * @return an {@link ResponseEntity} aggregated {@link List} of {@link StockEntity} grouped by sector
+     * 
+     * */
     @GetMapping("/sectorStats")
     public ResponseEntity<List<Map<String, Object>>> getSectorStats() {
         return service.getSectorStats();
     }
 
-    // create a stock
+    /**
+     * Creates a stock in the database and returns it
+     * @param dto a data transfer object representing the stock we wish to add
+     * @return a {@link ResponseEntity} with 201 status if successful with the {@link StockEntity} inside
+     * */
     @PostMapping
     public ResponseEntity<StockEntity> createOne(@Valid @RequestBody StockEntityDto dto) {
         return service.createOne(dto);
     }
 
-    // edit a stock
+    /**
+     * Updates an existing stock in the database and returns it.
+     * @param id the id of the stock
+     * @param dto a data transfer object representing the stock we wish to update
+     * @return a {@link ResponseEntity} with 200 status if successful with the {@link StockEntity} inside
+     * 
+     * */
     @PutMapping("/{id}")
     public ResponseEntity<StockEntity> updateOne(@PathVariable int id, @Valid @RequestBody StockEntityDto dto) {
         return service.updateOne(id, dto);
     }
 
-    // delete a stock
+    /**
+     * Deletes a stock according to the id.
+     * @param id the id of the stock
+     * @return a {@link ResponseEntity} with 204 status if successful
+     * 
+     * */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOne(@PathVariable int id) {
         return service.deleteOne(id);
