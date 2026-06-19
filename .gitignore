@@ -5,6 +5,7 @@ target/
 !**/src/test/**/target/
 
 *.env
+**/config.js
 
 ### STS ###
 .apt_generated
@@ -14,6 +15,8 @@ target/
 .settings
 .springBeans
 .sts4-cache
+
+
 
 ### IntelliJ IDEA ###
 .idea

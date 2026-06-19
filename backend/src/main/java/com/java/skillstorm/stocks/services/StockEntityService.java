@@ -1,5 +1,9 @@
 package com.java.skillstorm.stocks.services;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.catalina.startup.ClassLoaderFactory.Repository;
@@ -24,11 +28,6 @@ public class StockEntityService {
         this.repo = repo;
     }
 
-    // findAll
-    public ResponseEntity<Iterable<StockEntity>> getAll() {
-        return ResponseEntity.ok(this.repo.findAll());
-    }
-
     // findAll (pagination)
     public ResponseEntity<Page<StockEntity>> getAll(Pageable pageable) {
         return ResponseEntity.ok(this.repo.findAll(pageable));
@@ -37,6 +36,21 @@ public class StockEntityService {
     // search (pagination)
     public ResponseEntity<Page<StockEntity>> search(String query, Pageable pageable) {
         return ResponseEntity.ok(this.repo.findByTickerSymbolContainingIgnoreCaseOrCompanyNameContainingIgnoreCaseOrSectorContainingIgnoreCase(query, query, query, pageable));
+    }
+
+    // sector stats for piechart
+    public ResponseEntity<List<Map<String,Object>>> getSectorStats() {
+        List<Object[]> results = this.repo.countStocksBySector();
+        List<Map<String, Object>> stats = new ArrayList<>();
+
+        // map object[] to a map
+        for (Object[] row: results) {
+            Map<String, Object> map = new HashMap<>();
+            map.put("sector", row[0]);
+            map.put("count", row[1]);
+            stats.add(map);
+        }
+        return ResponseEntity.status(200).body(stats);
     }
 
     // create one
@@ -116,6 +130,9 @@ public class StockEntityService {
         this.repo.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+
+    
 
     
 }

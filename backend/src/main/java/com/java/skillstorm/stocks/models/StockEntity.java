@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Positive;
 
 
 @Entity
@@ -28,12 +29,14 @@ public class StockEntity {
     private String sector;
 
     @Column(name = "current_market_price", nullable = false)
+    @Positive
     private double currentMarketPrice;
 
     @Column(name = "target_price", nullable = false)
+    @Positive
     private double targetPrice;
 
-    @Column(name = "date_added", nullable = false, insertable = true, updatable = true)
+    @Column(name = "date_added", nullable = false)
     private Date dateAdded;
 
     @Column(name = "analyst_notes")

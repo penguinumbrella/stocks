@@ -1,19 +1,26 @@
 package com.java.skillstorm.stocks.repositories;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import com.java.skillstorm.stocks.models.StockEntity;
 
 public interface StockEntityRepository extends JpaRepository<StockEntity, Integer> {
 
-    boolean existsByTickerSymbol(String tickerSymbol); // helper function to see if ticker exists in repo
+    // check for duplicate tickers
+    boolean existsByTickerSymbol(String tickerSymbol); 
     
-    // search for stocks where the ticker, company name, or sector is like what we need
+    // pagination search for stocks where the ticker, company name, or sector is like what we need
     Page<StockEntity> findByTickerSymbolContainingIgnoreCaseOrCompanyNameContainingIgnoreCaseOrSectorContainingIgnoreCase(
         String ticker, String companyName, String sector, Pageable pageable);
 
+    // return counts of all stocks aggregated by sector
+    @Query("SELECT s.sector as sector, COUNT(s) as count FROM StockEntity s GROUP BY s.sector")
+    List<Object[]> countStocksBySector();
     
     
 }

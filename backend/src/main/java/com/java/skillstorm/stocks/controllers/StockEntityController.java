@@ -1,5 +1,8 @@
 package com.java.skillstorm.stocks.controllers;
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.catalina.connector.Response;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -54,8 +57,11 @@ public class StockEntityController {
         return service.search(query, pageable);
 
     }
-    
-    
+
+    @GetMapping("/sectorStats")
+    public ResponseEntity<List<Map<String, Object>>> getSectorStats() {
+        return service.getSectorStats();
+    }
 
     @PostMapping
     public ResponseEntity<StockEntity> createOne(@Valid @RequestBody StockEntityDto dto) {
@@ -71,5 +77,8 @@ public class StockEntityController {
     public ResponseEntity<Void> deleteOne(@PathVariable int id) {
         return service.deleteOne(id);
     }
+
+    
+    
 }
 

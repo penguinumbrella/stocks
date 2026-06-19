@@ -1,9 +1,16 @@
-const BACKEND_URL = "http://localhost:8080/entities";
+/**
+ * api.js: Triggers fetching commands to the backend to do CRUD operations
+ */
+
+
+// create a config.js file in frontend folder to store backend URL
+import {CONFIG} from "./config.js";
+
 
 export const API = {
 
     async findAll(page = 0, sort = "tickerSymbol") {
-        const response = await fetch(`${BACKEND_URL}?page=${page}&size=10&sort=${sort}`);
+        const response = await fetch(`${CONFIG.BACKEND_URL}?page=${page}&size=10&sort=${sort}`);
         if (response.ok) {
             return await response.json();
         } else {
@@ -13,7 +20,7 @@ export const API = {
     },
 
     async search(query, page = 0, sort = "tickerSymbol") {
-        const response = await fetch(`${BACKEND_URL}/search?query=${query}&page=${page}&size=10&sort=${sort}`);
+        const response = await fetch(`${CONFIG.BACKEND_URL}/search?query=${query}&page=${page}&size=10&sort=${sort}`);
         if (response.ok) {
             return await response.json();
         } else {
@@ -23,8 +30,18 @@ export const API = {
         }
     },
 
+    async getSectorStats() {
+        const response = await fetch(`${CONFIG.BACKEND_URL}/sectorStats`);
+        if (response.ok) {
+            return await response.json();
+        } else {
+            const errorBody = await response.json();
+            throw new Error(`${errorBody.message}`)
+        }
+    },
+
     async createOne(newStock) {
-        const response = await fetch(BACKEND_URL, {
+        const response = await fetch(CONFIG.BACKEND_URL, {
             method: "POST",
             headers: {
                 "Content-Type" : "application/json"
@@ -45,7 +62,7 @@ export const API = {
 
     async updateOne(id, updatedStock) {
 
-        const response = await fetch(`${BACKEND_URL}/${id}`, {
+        const response = await fetch(`${CONFIG.BACKEND_URL}/${id}`, {
             method: "PUT",
             headers: {
                 "Content-Type" : "application/json"
@@ -61,7 +78,7 @@ export const API = {
     },
 
     async deleteOne(id) {
-        const response = await fetch(`${BACKEND_URL}/${id}`, {
+        const response = await fetch(`${CONFIG.BACKEND_URL}/${id}`, {
             method: "DELETE"
             }
         )
