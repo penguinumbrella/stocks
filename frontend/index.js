@@ -264,7 +264,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 // Helper Functions
 
-// load the current iteration of stocks on the page (default page 0)
+/**
+ * Load the current iteration of stocks on the page.
+ * @param {number} page - the current page our app is on
+ */
 const loadStocks = async (page = 0) => {
     try {
 
