@@ -1,5 +1,5 @@
 /**
- * ui.js: Handles UI rendering elements, form validation, injecting code.
+ * ui.js: Handles rendering UI elements such as form handling and injecting HTML code.
  */
 
 

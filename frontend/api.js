@@ -9,7 +9,6 @@ import {CONFIG} from "./config.js";
 
 export const API = {
 
-    // retrieve all paginated stocks, sorted by header
     /**
      * Retrieves a paginated list of stocks
      * @param {number} page - Page number to retrieve
