@@ -31,7 +31,7 @@ public interface StockEntityRepository extends JpaRepository<StockEntity, Intege
         String ticker, String companyName, String sector, Pageable pageable);
 
     /**
-     * Aggregates total stocks grouped by sector.
+     * Aggregates total stocks grouped by sector for piechart.
      * @return list of objects where each index includes sector name and count of stocks
      */
     @Query("SELECT s.sector as sector, COUNT(s) as count FROM StockEntity s GROUP BY s.sector")

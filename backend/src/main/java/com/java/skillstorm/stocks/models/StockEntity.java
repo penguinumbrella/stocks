@@ -1,3 +1,7 @@
+/**
+ * StockEntity: maps relationship between our Java object and database schema.
+ */
+
 package com.java.skillstorm.stocks.models;
 
 import java.sql.Date;

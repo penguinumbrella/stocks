@@ -1,5 +1,5 @@
 /**
- * index.js: Represents the "controller." Primary purpose is to set up event listeners that trigger logic from API and UI js files.
+ * index.js: Represents the "controller." Primary purpose is to set up event listeners that trigger logic from API and UI files.
  * Secondary purposes:
  *      - set up pie chart
  *      - reload stocks every time something is updated/paginated
