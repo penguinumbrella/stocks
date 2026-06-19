@@ -16,6 +16,8 @@ let totalPages = 1; // total page count
 
 let currentSort = "tickerSymbol"; // current header selected for sorting
 
+let editingId = null; // editing ID is null if we are just adding, otherwise it is set to the ID of the stock to edit
+
 let pieChart = null; // piechart holder
 
 // Table components
@@ -71,7 +73,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // open the modal if "+ New Stock" clicked
     openBtn.addEventListener("click", () => {
-        openModal(false, null);
+        // clear editing id just in case
+        editingId = null;
+        openModal(null);
     });
 
 
@@ -135,17 +139,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         // retrieve stock data from form
         const newStock = UI.getFormData(form);
-        // retrieve id, assuming it exists (yes if it was an edit)
-        const id = newStock.id;
 
          // refuse if data is invalid
         if (!UI.validateStockData(newStock)) return;
 
         try {
             // Edit existing stock
-            if (id) {
+            if (editingId) {
                 // call the backend to update it to DB
-                await API.updateOne(id, newStock);
+                await API.updateOne(editingId, newStock);
                 // refresh the table
                 await loadStocks(currentPage);
                 
@@ -161,6 +163,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             renderChart(stocks);
             // modal goes back to hiding
             modal.classList.add("hidden");
+            // back to add mode
+            editingId = null;
             
         } catch(err) {
             console.error(err);
@@ -244,7 +248,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             // if stock is found, trigger the edit modal
             if (stockToEdit) {
-                openModal(true, stockToEdit);
+                // set editingid to the id (we are now in edit mode)
+                editingId = stockToEdit.id;
+                openModal(stockToEdit);
             }
         }
         
@@ -302,7 +308,7 @@ const loadStocks = async (page = 0) => {
 // Helper functions
 
 // open modal functionality
-const openModal = (isEditMode = false, stock = null) => {
+const openModal = (stock = null) => {
 
     // reset the form before opening it
     form.reset();
@@ -310,28 +316,15 @@ const openModal = (isEditMode = false, stock = null) => {
     modal.classList.remove("hidden");
 
     // change the title and button text if we're in edit mode
-    modalTitle.textContent = isEditMode ? "Edit Stock" : "Add New Stock";
+    modalTitle.textContent = editingId ? "Edit Stock" : "Add New Stock";
     const btn = form.querySelector('button[type="submit"]');
-    btn.textContent = isEditMode ? "Update Stock" : "Add Stock";
-
-    // Find or create the hidden ID input
-    let hiddenId = form.querySelector('input[name="id"]');
-
-    if (!hiddenId) {
-        hiddenId = document.createElement("input");
-        hiddenId.type = "hidden";
-        hiddenId.name = "id";
-        form.appendChild(hiddenId);
-    }
+    btn.textContent = editingId ? "Update Stock" : "Add Stock";
 
     // edit mode
-    if (isEditMode && stock) {
+    if (editingId && stock) {
         // populate form with existing values
         UI.populateForm(form, stock);
-    } else { // add mode
-        // no hidden value
-        hiddenId.value = "";
-    }
+    } // add mode otherwise
 }
 
 // render the chart

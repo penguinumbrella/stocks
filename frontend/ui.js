@@ -75,8 +75,8 @@ export const UI = {
         // wrap in FormData for easier access
         let inputData = new FormData(form);
 
+        // create stock object getting values
         const newStock = {
-            id: inputData.get("id"), // this only appears if the form has the hidden id from edit
             tickerSymbol: inputData.get("ticker-symbol"),
             companyName: inputData.get("company-name"),
             sector: inputData.get("sector"),
@@ -101,16 +101,6 @@ export const UI = {
         form.querySelector('input[name="target-price"]').value = stock.targetPrice;
 
         form.querySelector('textarea[name="analyst-notes"]').value = stock.analystNotes;
-
-        // hidden id
-        let hiddenId = form.querySelector('input[name="id"]');
-        if (!hiddenId) {
-            hiddenId = document.createElement("input");
-            hiddenId.type = "hidden";
-            hiddenId.name = "id";
-            form.appendChild(hiddenId);
-        }
-        hiddenId.value = stock.id;
 
     },
 
