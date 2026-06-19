@@ -1,3 +1,9 @@
+/**
+ * 
+ * StockEntityDto: Data transfer object for storing data across the controller to the service class
+ * 
+ */
+
 package com.java.skillstorm.stocks.dtos;
 import java.sql.Date;
 

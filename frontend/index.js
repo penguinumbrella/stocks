@@ -5,33 +5,35 @@
  *      - reload stocks every time something is updated/paginated
  */
 
+// importing other components for functions
 import {API} from "./api.js";
 import {UI} from "./ui.js";
 
-let stocks = [];
+let stocks = []; // current stocks of the page
 
-let currentPage = 0;
-let totalPages = 1;
+let currentPage = 0; // page we're looking at
+let totalPages = 1; // total page count
 
-let currentSort = "tickerSymbol";
+let currentSort = "tickerSymbol"; // current header selected for sorting
 
-let pieChart = null;
+let pieChart = null; // piechart holder
 
 // Table components
 const tableBody = document.getElementById("stock-table-body");
-const tableHead = document.querySelector("thead");
+const tableHead = document.querySelector("thead"); // used for selecting headers
 
-// Search component
+// Search bar
 const searchInput = document.getElementById("search-input");
 
 
-// Buttons
+// Buttons (pagination)
 const prevBtn = document.getElementById("prev-btn");
 const nextBtn = document.getElementById("next-btn");
 
 // Buttons for modal
 const openBtn = document.getElementById("open-modal-btn");
 const closeBtn = document.getElementById("close-modal-btn");
+const closeBtnX = document.getElementById("close-modal-x");
 
 // Modal components
 const modal = document.getElementById("stock-modal");
@@ -50,12 +52,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.querySelector('[data-sort="tickerSymbol"]').classList.add("active");
 
     // Pagination Listeners
+
+    // navigate to previous page
     prevBtn.addEventListener("click", () => {
         if (currentPage > 0) {
             loadStocks(currentPage - 1);
         }
     })
 
+    // navigate to next page
     nextBtn.addEventListener("click", () => {
         if (currentPage < totalPages - 1) {
             loadStocks(currentPage + 1);
@@ -63,9 +68,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     })
 
     // Modal Configuration Listeners
+
+    // open the modal if "+ New Stock" clicked
     openBtn.addEventListener("click", () => {
         openModal(false, null);
     });
+
+
+    // IN MODAL MODE
 
     // exit if background clicked
     backdrop.addEventListener("click", () => {
@@ -75,26 +85,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     document.addEventListener("keydown", (eventInfo) => {
         if (eventInfo.key === "Escape") modal.classList.add("hidden");
     });
-    // exit if close btn (close and x) clicked
+    // exit if close btn clicked
     closeBtn.addEventListener("click", () => {
         modal.classList.add("hidden");
     });
-    document.getElementById("close-modal-x").addEventListener("click", () => {
+    // exit if X clicked
+    closeBtnX.addEventListener("click", () => {
         modal.classList.add("hidden");
     });
 
 
     // Search Input Listener
+    // refresh table any time something is typed
     searchInput.addEventListener("input", async (eventInfo) => {
-
         loadStocks(0);
     })
 
     // Table Sorting Listener
     tableHead.addEventListener("click", (eventInfo => {
+        // retrieve clicked header
         const header = eventInfo.target.closest(".table-header");
 
-        if (header && header.dataset.sort) { // check if exists
+         // check if exists
+        if (header && header.dataset.sort) {
 
             // remove active visual from all
             document.querySelectorAll(".table-header").forEach(th => {
@@ -104,7 +117,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             // only add active visual to selected header
             header.classList.add("active");
 
+            // set the new currentSort
             currentSort = header.dataset.sort;
+            // refresh table
             loadStocks(0);
         }
     }));
@@ -112,39 +127,46 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Form Listeners
 
-    // Edit/Add a stock
+    // Edit/Add a stock (after we hit submit on the modal)
     form.addEventListener("submit", async (eventInfo) => {
 
+        // prevent built in default behavior
         eventInfo.preventDefault();
 
+        // retrieve stock data from form
         const newStock = UI.getFormData(form);
+        // retrieve id, assuming it exists (yes if it was an edit)
         const id = newStock.id;
 
-        if (!UI.validateStockData(newStock)) return; // refuse if data is invalid
+         // refuse if data is invalid
+        if (!UI.validateStockData(newStock)) return;
 
         try {
             // Edit existing stock
             if (id) {
+                // call the backend to update it to DB
                 await API.updateOne(id, newStock);
+                // refresh the table
                 await loadStocks(currentPage);
-
-                // update stock in stocks
-                stocks = stocks.map(stock => stock.id == id ? newStock : stock); 
                 
+                // remove the id selector, make sure we're back in add mode
                 form.querySelector('input[name="id"]')?.remove();
             } else {    // Add new stock
-                const stock = await API.createOne(newStock);
-                stocks.push(stock);
+                // call backend to add it to DB
+                await API.createOne(newStock);
+                // refresh the table, go to the end to see update
                 await loadStocks(totalPages - 1);
             }
+            // rerender the chart
             renderChart(stocks);
-            form.reset();
+            // modal goes back to hiding
             modal.classList.add("hidden");
             
         } catch(err) {
             console.error(err);
 
-            // Trigger SweetAlert2 error message
+            // Trigger SweetAlert2 error message (specifically for duplicate ticker)
+            // occurs if either edit or add throw an error from the API call
             Swal.fire({
                 title: 'Error',
                 text: err.message,
@@ -163,10 +185,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         // Handle Delete
         if (eventInfo.target.classList.contains("delete-btn")) {
+
+            // Retrieve ID of delete button
             const idString = eventInfo.target.id;
             const id = idString.split("-")[1];
 
-
+            // Confirmation before user deletes for good
             const caution = await Swal.fire({
                     title: 'Are you sure?',
                     text: "This action cannot be undone.",
@@ -182,24 +206,27 @@ document.addEventListener("DOMContentLoaded", async () => {
                     cancelButtonColor: '#1d3d52',
                 });;
         
+            // cancels the action, returns early
             if (!caution.isConfirmed) {
                 return;
             }
 
             try {
+                // try calling backend to delete
                 await API.deleteOne(id);
 
+                // if we are on the last page and there aren't any more stocks, go to the previous page
                 if (stocks.length === 1 && currentPage > 0) {
                     await loadStocks(currentPage - 1);
                 } else {
                     await loadStocks(currentPage);
                 }
 
+                // re-render chart
                 renderChart(stocks);
 
-                // update stocks
-                stocks = stocks.filter(stock => stock.id != id);
             } catch(err) {
+                // potential to return 404 error (not found)
                 console.error(err);
             }
         }
@@ -207,11 +234,15 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Handle Edit
 
         else if (eventInfo.target.classList.contains("edit-btn")) {
+
+            // Retrieve ID of edit button
             const idString = eventInfo.target.id;
             const id = idString.split("-")[1];
 
+            // retireve the stock in our stocks list
             const stockToEdit = stocks.find(s => s.id == id);
 
+            // if stock is found, trigger the edit modal
             if (stockToEdit) {
                 openModal(true, stockToEdit);
             }
@@ -226,47 +257,60 @@ document.addEventListener("DOMContentLoaded", async () => {
 const loadStocks = async (page = 0) => {
     try {
 
+        // loads the query from the search input, removing spacing on either end
         const activeQuery = searchInput.value.trim();
 
+        // trigger API call for pagination
         let pageData;
         if(activeQuery.length > 0) {
-            
+            // if we have something typed, trigger the search API call
             pageData = await API.search(activeQuery, page, currentSort);
         } else {
+            // otherwise, trigger the default call
             pageData = await API.findAll(page, currentSort);
         }
 
+        // set the stocks to match the data content 
         stocks = pageData.content;
 
 
+        // reset original rows of table
         tableBody.innerHTML = "";
         
 
+        // call renderRow for each stock
         stocks.forEach(stock => UI.renderRow(tableBody, stock));
 
 
+        // set the current page we're on, out of total pages
         currentPage = pageData.number;
         totalPages = stocks.length > 0 ? pageData.totalPages : 1;
-
         document.getElementById("page-info").textContent = `Page ${currentPage + 1}/${totalPages}`;
 
+        // disable prev/next buttons according to if we're on the first/last page
         document.getElementById("prev-btn").disabled = pageData.first;
         document.getElementById("next-btn").disabled = pageData.last;
 
         
 
     } catch(err) {
+        // catch error if API call failed
         console.error(err);
     }
 }
 
 // Helper functions
 
+// open modal functionality
 const openModal = (isEditMode = false, stock = null) => {
-    form.reset();
-    modal.classList.remove("hidden");
-    modalTitle.textContent = isEditMode ? "Edit Stock" : "Add New Stock";
 
+    // reset the form before opening it
+    form.reset();
+    // make the form visible
+    modal.classList.remove("hidden");
+
+    // change the title and button text if we're in edit mode
+    modalTitle.textContent = isEditMode ? "Edit Stock" : "Add New Stock";
     const btn = form.querySelector('button[type="submit"]');
     btn.textContent = isEditMode ? "Update Stock" : "Add Stock";
 
@@ -282,80 +326,96 @@ const openModal = (isEditMode = false, stock = null) => {
 
     // edit mode
     if (isEditMode && stock) {
+        // populate form with existing values
         UI.populateForm(form, stock);
     } else { // add mode
-        form.querySelector('textarea[name="analyst-notes"]').value = "";
-        form.reset();
+        // no hidden value
         hiddenId.value = "";
     }
 }
 
-
+// render the chart
 const renderChart = async (stocks) => {
-    const sectorData = await API.getSectorStats();
+    
+    try {
+        // retrieve sector stats from backend
+        const sectorData = await API.getSectorStats();
 
-    const labels = sectorData.map(item => item.sector);
-    const counts = sectorData.map(item => item.count);
+        // map labels and counts from retrieved sector data
+        const labels = sectorData.map(item => item.sector);
+        const counts = sectorData.map(item => item.count);
 
+        // delete the existing pie chart if it exists
+        if (pieChart) pieChart.destroy();
 
-    if (pieChart) pieChart.destroy();
+        // create new pie chart with params (from Chart.js)
+        // customization config
+        pieChart = new Chart(pieChartContext, {
+            type: "doughnut",
 
-    pieChart = new Chart(pieChartContext, {
-        type: "doughnut",
-        data: {
-            labels: labels,
-            datasets: [{
-                data: counts,
-                backgroundColor: [
-                    "#0ea5e9",
-                    "#38bdf8",
-                    "#818cf8",
-                    "#c084fc",
-                    "#e879f9",
-                    "#f472b6",
-                    "#fb7185",
-                    "#fdba74",
-                    "#fde047",
-                    "#bef264",
-                    "#4ade80"
-                    ],
-                    borderColor: "transparent",
-                    spacing: 16,
-                    hoverOffset: 15,
-                    borderRadius: 10
-                }]
-        },
+            // pie chart customization
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: counts,
+                    backgroundColor: [
+                        "#0ea5e9",
+                        "#38bdf8",
+                        "#818cf8",
+                        "#c084fc",
+                        "#e879f9",
+                        "#f472b6",
+                        "#fb7185",
+                        "#fdba74",
+                        "#fde047",
+                        "#bef264",
+                        "#4ade80"
+                        ],
+                        borderColor: "transparent",
+                        spacing: 16,
+                        hoverOffset: 15,
+                        borderRadius: 10
+                    }]
+            },
 
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '40%',
-            plugins: {
-                legend: {
-                    position: "right",
-                    align: "center",
-                    labels: {
-                        color: "#adbfd9",
-                        font: {
-                            size: 14,
-                            family: "'Inter', sans-serif"
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '40%',
+
+                // sector breakdown legend
+                plugins: {
+                    legend: {
+                        position: "right",
+                        align: "center",
+                        labels: {
+                            color: "#adbfd9",
+                            font: {
+                                size: 14,
+                                family: "'Inter', sans-serif"
+                            },
+                            padding: 30,       
+                            boxWidth: 15,      
+                            boxHeight: 20,     
+                            usePointStyle: true, 
+                            pointStyle: 'circle'
                         },
-                        padding: 30,       
-                        boxWidth: 15,      
-                        boxHeight: 20,     
-                        usePointStyle: true, 
-                        pointStyle: 'circle'
-                    },
-                    title: {
-                        display: true,
-                        text: 'SECTOR BREAKDOWN',
-                        color: '#ffffff',
-                        font: { size: 18, 
-                                family: "'Inter', sans-serif"},
-                        padding: { bottom: 10 }
+                        title: {
+                            display: true,
+                            text: 'SECTOR BREAKDOWN',
+                            color: '#ffffff',
+                            font: { size: 18, 
+                                    family: "'Inter', sans-serif"},
+                            padding: { bottom: 10 }
+                        }
                     }
-                }
-        }
-        }
-    });
+            }
+            }
+        });
+
+    } catch(err) {
+        // catch error if API call failed
+        console.error(err);
+    }
+    
 }

@@ -1,3 +1,10 @@
+/**
+ * StockEntityController
+ * 
+ * Manages incoming requests from the frontend.
+ * 
+ */
+
 package com.java.skillstorm.stocks.controllers;
 
 import java.util.List;
@@ -30,49 +37,57 @@ import jakarta.validation.Valid;
 @RequestMapping("/entities")
 @CrossOrigin(origins = "http://127.0.0.1:5500")
 public class StockEntityController {
+    
     private final StockEntityService service;
 
+    // inject ServiceBean to be used
     public StockEntityController(StockEntityService service) {
         this.service = service;
     }
 
+    // Retrieve a paginated list of stocks
     @GetMapping
     public ResponseEntity<Page<StockEntity>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "0") int page, // requested page
+            @RequestParam(defaultValue = "10") int size, // number of items to include on a page
             @RequestParam(defaultValue = "tickerSymbol") String sort) { // sorts our paginated pages by given parameter
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort).ascending());
         return service.getAll(pageable);
     }
 
+    // Similar to getAll(), but includes the query from the search input
     @GetMapping("/search")
     public ResponseEntity<Page<StockEntity>> search(
-            @RequestParam String query,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "tickerSymbol") String sort) {
+            @RequestParam String query, // search query
+            @RequestParam(defaultValue = "0") int page, // requested page
+            @RequestParam(defaultValue = "10") int size, // number of items to include on a page
+            @RequestParam(defaultValue = "tickerSymbol") String sort) { // sorts our paginated pages by given parameter
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort).ascending());
         return service.search(query, pageable);
 
     }
 
+    // retrieves the sector stats for the piechart
     @GetMapping("/sectorStats")
     public ResponseEntity<List<Map<String, Object>>> getSectorStats() {
         return service.getSectorStats();
     }
 
+    // create a stock
     @PostMapping
     public ResponseEntity<StockEntity> createOne(@Valid @RequestBody StockEntityDto dto) {
         return service.createOne(dto);
     }
 
+    // edit a stock
     @PutMapping("/{id}")
     public ResponseEntity<StockEntity> updateOne(@PathVariable int id, @Valid @RequestBody StockEntityDto dto) {
         return service.updateOne(id, dto);
     }
 
+    // delete a stock
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOne(@PathVariable int id) {
         return service.deleteOne(id);

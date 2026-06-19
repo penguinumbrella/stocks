@@ -1,3 +1,11 @@
+/**
+ * StockEntityService: Handles business logic. Called from StockEntityController and uses StockEntityRepository to do desired tasks
+ * 
+ * - Throws custom ResponseStatusExceptions to GlobalExceptionHandler when something fails.
+ * 
+ */
+
+
 package com.java.skillstorm.stocks.services;
 
 import java.util.ArrayList;
@@ -24,6 +32,7 @@ public class StockEntityService {
 
     private final StockEntityRepository repo;
 
+    // Repository Bean Injection
     public StockEntityService(StockEntityRepository repo) {
         this.repo = repo;
     }
@@ -56,18 +65,21 @@ public class StockEntityService {
     // create one
     public ResponseEntity<StockEntity> createOne(StockEntityDto dto) {
 
+        // throw 409 if ticker already exists in repo
         if(repo.existsByTickerSymbol(dto.tickerSymbol())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                 "Ticker " + dto.tickerSymbol() + " already exists."
             );
         }
 
+        // throw 404 if prices aren't positive
         if (dto.currentMarketPrice() <= 0 || dto.targetPrice() <= 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 "Prices must be positive values."
             );
         }
 
+        // using DTO values, create the stock in the repo and return it
         return ResponseEntity.status(201).body(this.repo.save(new StockEntity(  0, 
                                                                                 dto.tickerSymbol(), 
                                                                                 dto.companyName(), 
@@ -82,27 +94,33 @@ public class StockEntityService {
     // update one
     public ResponseEntity<StockEntity> updateOne(int id, StockEntityDto dto) {
 
+        // find the original stock in the database we are updating
         Optional<StockEntity> optionalStock = this.repo.findById(id);
         StockEntity existingStock;
 
+        
         if (optionalStock.isPresent()) {
             existingStock = optionalStock.get();
         } else {
+            // throw 404 if we can't find the stock
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cannot update stock. Stock with id " + id + " not found.");
         }
 
+        // throw 409 if another stock in the DB already has the same ticker
         if (!existingStock.getTickerSymbol().equals(dto.tickerSymbol()) && repo.existsByTickerSymbol(dto.tickerSymbol())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                 "Ticker '" + dto.tickerSymbol() + "' is already in use by another stock."
             );
         }
 
+        // throw 404 if the prices aren't positive
         if (dto.currentMarketPrice() <= 0 || dto.targetPrice() <= 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                 "Prices must be positive values."
             );
         }
 
+        // using DTO values, update the stock in the DB and return it
         if (this.repo.existsById(id)) {
             StockEntity updated = this.repo.save(new StockEntity(  id, 
                                                                     dto.tickerSymbol(), 
@@ -121,6 +139,7 @@ public class StockEntityService {
     // delete one
     public ResponseEntity<Void> deleteOne(int id) {
 
+        // if we can't find the id to the stock, throw a 404
         if(!repo.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                 "Cannot delete. Stock with ID " + id + " not found."

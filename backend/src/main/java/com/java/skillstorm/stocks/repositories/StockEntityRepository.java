@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import com.java.skillstorm.stocks.models.StockEntity;
 
+// Using JpaRepository for maximum capability. Because it extends PagingAndSortingRepository, we can use pagination.
 public interface StockEntityRepository extends JpaRepository<StockEntity, Integer> {
 
     // check for duplicate tickers
