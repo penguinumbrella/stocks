@@ -15,6 +15,7 @@ public interface StockEntityRepository extends JpaRepository<StockEntity, Intege
     // check for duplicate tickers
     boolean existsByTickerSymbol(String tickerSymbol); 
     
+    // built in name tracing from Springboot 
     // pagination search for stocks where the ticker, company name, or sector is like what we need
     Page<StockEntity> findByTickerSymbolContainingIgnoreCaseOrCompanyNameContainingIgnoreCaseOrSectorContainingIgnoreCase(
         String ticker, String companyName, String sector, Pageable pageable);

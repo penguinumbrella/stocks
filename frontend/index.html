@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Stock Tracker</title>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
     <style type="text/tailwindcss">
         @layer components {
             /* Field input only */
@@ -22,29 +25,35 @@
                 placeholder-slate-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent 
                 outline-none 
                 transition-all duration-300
-                hover:border-slate-500 transition-all duration-300;
+                hover:border-slate-500;
             }
 
+            /* default header style*/
             .table-header {
                 @apply px-6 py-4 text-left font-semibold text-slate-400 uppercase tracking-wider text-xs;
             }
+            /* change header to blue when active */
+            .table-header.active {
+                @apply text-blue-400;
+            }
 
+            /* individual table cells */
             .table-cell {
                 @apply px-6 py-4 text-slate-300 border-b border-slate-700/50;
             }
 
+            /* edit/delete buttons */
             .btn-base {
                 @apply p-1 transition-colors duration-200 flex items-center justify-center;
             }
-
             .edit-btn {
                 @apply btn-base text-slate-500 hover:text-yellow-400;
             }
-            
             .delete-btn {
                 @apply btn-base text-slate-500 hover:text-red-400;
             }
 
+            /* Primary buttons (+ new stock, save stock) */
             .primary-btn {
                 @apply bg-gradient-to-tr from-blue-600 to-blue-800 hover:from-blue-500 hover:to-blue-700
                 text-white
@@ -53,6 +62,7 @@
                 transition-all active:scale-95;
             }
 
+            /* secondary buttons (cancel, pagination button styles) */
             .secondary-btn {
                 @apply px-4 py-2 rounded-full text-sm font-medium border 
                     border-slate-700 bg-slate-800 text-slate-400 
@@ -61,26 +71,24 @@
                     disabled:opacity-30 disabled:cursor-not-allowed;
             }
 
-            .table-header.active {
-                @apply text-blue-400;
-            }
+            
 
         }
     </style>
+
 </head>
+
 <body class="bg-slate-900 text-slate-900">
 
     <div class="max-w-7xl mx-auto">
         <h1 class="text-3xl font-bold mb-8">Portfolio Tracker</h1>
 
         <!-- Title -->
-        <h1 class="text-sm font-semibold tracking-widest uppercase text-white mb-6">Stock Management Portfolio</h1>
+        <h1 class="text-sm font-semibold tracking-widest text-white uppercase">Stock Management Portfolio</h1>
 
         <!-- Pie Chart Distribution -->
-        <div class=" p-6 px-20">
-            <div class="h-100">
-                <canvas id="sector-chart"></canvas>
-            </div>
+        <div class=" p-6 px-20 ">
+            <canvas id="sector-chart"></canvas>
         </div>
 
         <!-- New Stock Button + Search Input Line -->
@@ -88,22 +96,25 @@
 
             <!-- NEW STOCK BUTTON -->
             <button id="open-modal-btn" class="
-            primary-btn">
+                primary-btn">
                 <span>+ NEW STOCK</span>
             </button>
 
             <!-- SEARCH INPUT -->
             <div class="relative w-full">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <!-- Magnifying glass icon -->
+                <div class="absolute inset-y-0 pl-3 flex items-center pointer-events-none">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="grey" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="m21 21-4.34-4.34"/><circle cx="11" cy="11" r="8"/></svg>
                 </div>
+                <!-- text area -->
                 <input 
                     id="search-input" 
                     type="text" 
-                    placeholder="Search by Ticker or Company..." 
+                    placeholder="Search by Ticker, Company, or Sector..." 
                     class="input w-full pl-10 pr-4 py-2.5 
                             text-white
-                            bg-slate-800 border border-slate-700 rounded-full placeholder-slate-500 "
+                            bg-slate-800 border 
+                            rounded-full"
                 >
             </div>
         </div>
@@ -121,14 +132,16 @@
                 transform transition-all">
 
                 <!-- Close Modal X -->
-                <button id="close-modal-x" class="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors">
+                <button id="close-modal-x" class="absolute top-4 right-4 
+                    text-slate-500 hover:text-white 
+                    transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
 
                 <!-- Add/edit Modal Title -->
-                <h2 class = "text-sm font-semibold tracking-widest uppercase text-white mb-6" id="modal-title">Add New Stock</h2>
+                <h2 class = "text-sm font-semibold tracking-widest text-white mb-6 uppercase" id="modal-title">Add New Stock</h2>
                 
                 <!-- EDIT/ADD STOCK FORM-->
                 <form id="new-stock-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -167,7 +180,7 @@
                     </textarea>
 
                     <!-- Close and Save Buttons -->
-                    <div class="flex gap-4">
+                    <div class = "flex gap-4">
                         <button type="button" id="close-modal-btn" class="secondary-btn">
                             Cancel
                         </button>
@@ -197,14 +210,14 @@
                         <th class="table-header text-center">Actions</th>
                     </tr>
                 </thead>
-                <tbody id="stock-table-body" class="divide-y divide-slate-700/50">
+                <tbody id="stock-table-body">
                     </tbody>
             </table>
         </div>
         
         <!-- PAGINATION CONTROLS -->
         <div id="pagination-controls" 
-            class="flex items-center justify-between py-6">
+            class="flex justify-between py-6">
             <!-- Previous Button -->
             <button id="prev-btn" class="secondary-btn flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-left-icon lucide-chevron-left"><path d="m15 18-6-6 6-6"/></svg>

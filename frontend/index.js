@@ -46,11 +46,14 @@ const form = document.getElementById("new-stock-form");
 // Pie chart component
 const pieChartContext = document.getElementById('sector-chart').getContext('2d');
 
+// runs our frontend logic after everything in DOM is loaded
 document.addEventListener("DOMContentLoaded", async () => {
 
     // Initial fetch of data / pagination, load chart
     await loadStocks(0);
     await renderChart(stocks);
+
+    // data-sort represents the viable headers we can sort by
     document.querySelector('[data-sort="tickerSymbol"]').classList.add("active");
 
     // Pagination Listeners
@@ -123,7 +126,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             // set the new currentSort
             currentSort = header.dataset.sort;
-            // refresh table
+            // refresh table (with new header to be sorted by in place)
             loadStocks(0);
         }
     }));
@@ -131,60 +134,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Form Listeners
 
-    // Edit/Add a stock (after we hit submit on the modal)
-    form.addEventListener("submit", async (eventInfo) => {
-
-        // prevent built in default behavior
-        eventInfo.preventDefault();
-
-        // retrieve stock data from form
-        const newStock = UI.getFormData(form);
-
-         // refuse if data is invalid
-        if (!UI.validateStockData(newStock)) return;
-
-        try {
-            // Edit existing stock
-            if (editingId) {
-                // call the backend to update it to DB
-                await API.updateOne(editingId, newStock);
-                // refresh the table
-                await loadStocks(currentPage);
-                
-                // remove the id selector, make sure we're back in add mode
-                form.querySelector('input[name="id"]')?.remove();
-            } else {    // Add new stock
-                // call backend to add it to DB
-                await API.createOne(newStock);
-                // refresh the table, go to the end to see update
-                await loadStocks(totalPages - 1);
-            }
-            // rerender the chart
-            renderChart(stocks);
-            // modal goes back to hiding
-            modal.classList.add("hidden");
-            // back to add mode
-            editingId = null;
-            
-        } catch(err) {
-            console.error(err);
-
-            // Trigger SweetAlert2 error message (specifically for duplicate ticker)
-            // occurs if either edit or add throw an error from the API call
-            Swal.fire({
-                title: 'Error',
-                text: err.message,
-                icon: 'error',
-
-                background: '#1d3d52',
-                color: '#d3dae6',
-                confirmButtonColor: '#1d3d52',
-                confirmButtonText: 'OK'
-            });
-        }
-    })
-
-    // Remove/Edit a stock
+    // Clicked Remove/Edit buttons to remove/edit a stock
     tableBody.addEventListener("click", async (eventInfo) => {
 
         // Handle Delete
@@ -255,6 +205,61 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
         
     })
+
+    // Edit/Add a stock (after we hit submit on the modal)
+    form.addEventListener("submit", async (eventInfo) => {
+
+        // prevent built in default behavior
+        eventInfo.preventDefault();
+
+        // retrieve stock data from form
+        const newStock = UI.getFormData(form);
+
+         // refuse if data is invalid
+        if (!UI.validateStockData(newStock)) return;
+
+        try {
+            // Edit existing stock
+            if (editingId) {
+                // call the backend to update it to DB
+                await API.updateOne(editingId, newStock);
+                // refresh the table
+                await loadStocks(currentPage);
+                
+                // remove the id selector, make sure we're back in add mode
+                form.querySelector('input[name="id"]')?.remove();
+            } else {    // Add new stock
+                // call backend to add it to DB
+                await API.createOne(newStock);
+                // refresh the table, go to the end to see update
+                await loadStocks(totalPages - 1);
+            }
+            // rerender the chart
+            renderChart(stocks);
+            // modal goes back to hiding
+            modal.classList.add("hidden");
+            // back to add mode
+            editingId = null;
+            
+        } catch(err) {
+            console.error(err);
+
+            // Trigger SweetAlert2 error message (specifically for duplicate ticker)
+            // occurs if either edit or add throw an error from the API call
+            Swal.fire({
+                title: 'Error',
+                text: err.message,
+                icon: 'error',
+
+                background: '#1d3d52',
+                color: '#d3dae6',
+                confirmButtonColor: '#1d3d52',
+                confirmButtonText: 'OK'
+            });
+        }
+    })
+
+    
 })
 
 // Helper Functions
@@ -387,7 +392,7 @@ const renderChart = async (stocks) => {
                                 size: 14,
                                 family: "'Inter', sans-serif"
                             },
-                            padding: 30,       
+                            padding: 25,       
                             boxWidth: 15,      
                             boxHeight: 20,     
                             usePointStyle: true, 
